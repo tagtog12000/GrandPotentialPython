@@ -5,6 +5,7 @@
 #include <bitset>
 #include <vector>
 #include <string>
+#include <algorithm> // for std::swap
 #include<bits/stdc++.h>
 using namespace std;
 //typedef short int uint;
