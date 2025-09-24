@@ -7,7 +7,7 @@
 #include <string>
 #include<bits/stdc++.h>
 using namespace std;
-//typedef short int uint;
+typedef short int uint;
 typedef unsigned long long int ullint;
 //Maximum
 const unsigned int MAX_2N=22,MAX_N=11, MAX_CYC = 1100,MAX_2P2=1000,MAX_C = 10000, MAXT = 100000;
@@ -1492,8 +1492,9 @@ int main()
     int FerOrBos;
     irrOnly = 2;
     ostringstream stm ;
-    cout << "Enter the order n" << endl;
-    cin>>aa;
+    //cout << "Enter the order n" << endl;
+    aa = 3;
+    //cin>>aa;
     if(floor(aa)!=ceil(aa))
     {
         cout<<"Failed ! Please enter an integer value"<<endl;
@@ -1507,8 +1508,9 @@ int main()
             cout<<"This value is out of the range, Please enter a value less than 32"<<endl;
         else
         {
-            cout<<"Please enter -1 for Fermions or 1 for Bosons"<<endl;
-            cin>>bb;
+            //cout<<"Please enter -1 for Fermions or 1 for Bosons"<<endl;
+            //cin>>bb;
+            bb = -1;
             if(floor(bb)!=ceil(bb))
             {
                 cout<<"Failed! Please enter only -1 for Fermions or 1 for Bosons"<<endl;
@@ -1522,9 +1524,10 @@ int main()
                 {
                     while(true)
                     {
-                        cout<<"If you need to evaluate only irreducible diagrams enter the number 0"<<endl;
-                        cout<<"If you need to evaluate all diagrams (including HF) enter the number 1"<<endl;
-                        cin>>irrOnly;
+                        //cout<<"If you need to evaluate only irreducible diagrams enter the number 0"<<endl;
+                        //cout<<"If you need to evaluate all diagrams (including HF) enter the number 1"<<endl;
+                        //cin>>irrOnly;
+                        irrOnly = 0;
                         if(irrOnly == 0 || irrOnly == 1)
                             break;
                     }
