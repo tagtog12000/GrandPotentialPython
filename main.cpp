@@ -216,59 +216,59 @@ int ToN(ullint n)
     return nb;
 }
 
-void WriteUint(const string &st, const vector<vector<ullint>> &Mat) {
+void WriteUint(const string st, const vector<vector<ullint>> &Mat) {
     // Construct filename from st + ".txt"
     string filename = st + ".txt";
-    ofstream myfile(filename);
-    if (!myfile.is_open()) {
+    ofstream myfile1(filename);
+    if (!myfile1.is_open()) {
         cerr << "Error: could not open " << filename << endl;
         return;
     }
 
-    myfile << "[";
+    myfile1 << "[";
     for (size_t kk = 0; kk < Mat.size(); kk++) {
-        myfile << "[";
+        myfile1 << "[";
         for (size_t i = 0; i < Mat[kk].size(); i++) {
-            myfile << Mat[kk][i];
+            myfile1 << Mat[kk][i];
             if (i != Mat[kk].size() - 1)
-                myfile << ",";
+                myfile1 << ",";
         }
         if (kk == Mat.size() - 1)
-            myfile << "]";
+            myfile1 << "]";
         else
-            myfile << "],";
+            myfile1 << "],";
     }
-    myfile << "]";
+    myfile1 << "]";
 
-    myfile.close();
+    myfile1.close();
 }
 
 void WriteInt(string st, vector< vector<int> > Mat)
 {
     // Construct filename from st + ".txt"
     string filename = st + ".txt";
-    ofstream myfile(filename);
-    if (!myfile.is_open()) {
+    ofstream myfile1(filename);
+    if (!myfile1.is_open()) {
         cerr << "Error: could not open " << filename << endl;
         return;
     }
     
-    myfile<<"[";
+    myfile1<<"[";
     for(int kk=0; kk<Mat.size(); kk++)
     {
-        myfile<<"[";
+        myfile1<<"[";
         for(int i=0; i<Mat[kk].size(); i++)
         {
-            myfile<<Mat[kk][i];
+            myfile1 << Mat[kk][i];
             if(i!=Mat[kk].size()-1)
-                myfile<<",";
+                myfile1 << ",";
         }
         if(kk==Mat.size()-1)
-            myfile<<"]";
+            myfile1 <<"]";
         else
-            myfile<<"],";
+            myfile1<<"],";
     }
-    myfile<<"]";
+    myfile1<<"]";
 }
 
 void DFSUtil(int v, bool visited[], uint *L, uint *R)
