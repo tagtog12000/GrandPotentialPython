@@ -1046,6 +1046,7 @@ bool Itir(int p, int q, int szALLde, int sig, const int n)
     bool irrY, hfN;
     bool hf, nfnd = true;
     int dn = 2*n;
+    cout<<"itiration "<<endl;
     if(p==n+1)
     {
         for(k=1; k<=lnc[q]; k++)
