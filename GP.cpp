@@ -1031,6 +1031,7 @@ void Distrib(int v, int eps, const int n)
                 sig=sig*eps;
         else
             sig = pow(-1,n);
+        cout<<"begin 3"<<endl;
         Itir(1,q,szALLdet, sig, n);
     }
     return;
@@ -1444,7 +1445,9 @@ int main()
                     matDen.reserve(maxD), matSignDen.reserve(maxD), matNom.reserve(maxD), matSignNom.reserve(maxD), matCoefNom.reserve(maxD);
                     posZero.resize(2*maxD), posOne.resize(2*maxD);
                     bitOne.resize(2*maxD), bitZero.resize(2*maxD);
+                    cout<<"begin 1"<<endl;
                     CycGen(n);
+                    cout<<"begin 2"<<endl;
                     Distrib(v, FerOrBos, n);
                 }
             }
