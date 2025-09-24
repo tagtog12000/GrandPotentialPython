@@ -243,10 +243,24 @@ void findFundamentalCyclesGr(vector<ullint> &fundCycles, ullint spanningTree, ul
     }
 }
 //writting the expression in tex format
+vector<vector<pair<int,int>>> allGraphs;
 void writtingTex(vector<vector<pair<ullint,ullint>>> &matDenNigF, vector<vector<pair<ullint,ullint>>> &matNumSignF, vector<vector<int>> &matCoefF, int n){
     ostringstream stm;
     stm<<n;
     string sn = stm.str();
+    ofstream fout("graphs"+sn+".txt");
+    fout << "[";
+    for (size_t g = 0; g < allGraphs.size(); g++) {
+        fout << "[";
+        for (size_t i = 0; i < allGraphs[g].size(); i++) {
+            fout << "(" << allGraphs[g][i].first << "," << allGraphs[g][i].second << ")";
+            if (i + 1 < allGraphs[g].size()) fout << ", ";
+        }
+        fout << "]";
+        if (g + 1 < allGraphs.size()) fout << ",";
+    }
+    fout << "]";
+    fout.close();
     WriteUint("matDenNigF"+sn, matDenNigF);
     WriteUint("matNumSignF"+sn, matNumSignF);
     WriteInt("matCoefF"+sn, matCoefF);
@@ -281,7 +295,6 @@ void simplify(const vector<vector<pair<ullint,ullint>>> &matDenNig, const vector
     matDenNigF.push_back(matDenNig[positions[0]]);
     matNumSignF[0].push_back(matNumSign[positions[0]]);
     matCoefF[0].push_back(1);
-    
     for(int i = 1; i<szDD; i++){
         pos = positions[i];
         sg = 1;
@@ -349,17 +362,14 @@ void denominator(ullint spanningTree, const vector<ullint> edgesOut, const vecto
     }
     denominatorsNig.pop_back();//delete the last element
 }
-
 //fractions
 void fractions(const vector<ullint> &allSpanTrees, const vector<pair<ullint,ullint>> &denominatorsNig0, const vector<ullint> &edgesOut, const vector<ullint> &nodes, 
                 const vector<pair<int,int>> &edgL, const vector< pair<ullint,ullint>> &nigCyclesCy, int n){
     vector<vector<pair<ullint,ullint>>> matDenNig;
     vector<pair<ullint,ullint>> matNumSign, denominatorsNig;
     vector<int> matCf;
-    
     matDenNig.reserve(allSpanTrees.size());
     matNumSign.reserve(allSpanTrees.size());
-    
     for(const auto& spanningTree: allSpanTrees){
         ullint coTree = ((1ULL<< (2 * n)) - 1) & (~spanningTree);//the co-Tree
         denominatorsNig = denominatorsNig0;
@@ -405,14 +415,17 @@ void spanningTreesGenerator(vector<ullint> &trs, vector< vector<ullint>> &Edg, i
     }
 }
 //The main function to calculate the fractions and its divided differences forms
-int nSpTr = 0;
-int ln =0;
 void init(int *L, int *R, int n){
+    vector<pair<int,int>> graph;
+    for(int j=0; j<n; j++){
+        graph.push_back(make_pair(1+j,1+L[j]));
+        graph.push_back(make_pair(1+j,1+R[j]));
+    }
+    allGraphs.push_back(graph);
     //Initial steps 
     vector<ullint> nodes(n,0), edgesOut(n,0);
     vector<pair<int,int>> edgL(2*n);//labeled edges
     vector< vector<ullint>> Edg(n, vector<ullint>(n, 0));
-    
     for (int j = 0; j < n; j++) {
         j > L[j] ? Edg[j][L[j]] |= 1ULL << (2 * L[j]) : Edg[L[j]][j] |= 1ULL << (2 * L[j]);
         j > R[j] ? Edg[j][R[j]] |= 1ULL << (2 * R[j] + 1) : Edg[R[j]][j] |= 1ULL << (2 * R[j] + 1);
@@ -423,11 +436,8 @@ void init(int *L, int *R, int n){
         nodes[j] |= ((1ULL << (2 * L[j]))|(1ULL << (2 * R[j] + 1))|edgesOut[j]);//All the 4 edges
     }
     vector<ullint> trs, allSpanTrees;
-    nSpTr++;
     spanningTreesGenerator(trs, Edg, n-1, allSpanTrees);//Steps 1: Generate all spanning trees   
-    
     ullint refSpanTree = allSpanTrees[0];//Select an arbitrary spanning tree as reference tree
-    
     ullint coTree = ((1ULL<< (2 * n)) - 1) & (~refSpanTree); // Co-tree is the complement of the spanning tree
     vector<ullint> FundamentalCycles, allCycles, totCycles;
     findFundamentalCyclesGr(FundamentalCycles, refSpanTree, coTree, nodes, edgL);//First we compute the fundamental cycles of the diagram
@@ -460,7 +470,6 @@ void init(int *L, int *R, int n){
 void DFSUtil(int *jdfs, int v, bool visited[], int *VrtxDFS, int *L, int *R){
     visited[v] = true;
     VrtxDFS[(*jdfs)++] = v;
-
     if (!visited[L[v]])
         DFSUtil(jdfs, L[v], visited, VrtxDFS, L, R);
     if (!visited[R[v]])
@@ -520,7 +529,6 @@ bool nextPermutation(int *L, int *PosL, int * syL, int *Indx, int *index, int fi
     Reverse(L, PosL, syL, Indx, i+1, last, bg, sz);
     return true;
 }
-
 // Function to compute factorial
 int factorial(int n) {
     int res = 1;
@@ -528,7 +536,6 @@ int factorial(int n) {
         res *= i;
     return res;
 }
-
 // Function to perform a cyclic left shift on a list of integers
 void cyclicPermutation(int *L, int *PosL, int bg, int en){
     int temp = L[bg];
@@ -635,7 +642,6 @@ void reverseV(int *arr, int *pos, int *syL, int first, int last){
     return;
 }
 bool firstVisite = true;
-
 void disjCyclesCycGen(int *partition, int len, int n, int eps){
     int Indx[n+1], count[n+1], LisGenDet[n], LisSizDet[n], matbeg[n];
     int L[n], R[n], syL[n], PosL[n], PosR[n], index[n][n], Lev[n], Rev[n], first[n], last[n];
@@ -654,7 +660,6 @@ void disjCyclesCycGen(int *partition, int len, int n, int eps){
         PosR[i] = i;
         count[partition[i]]++;
     }
-    
     for(int r=1; r<=len; r++){
         Indx[r] = partition[r-1];
         Indx[r] += Indx[r-1]; 
@@ -675,17 +680,14 @@ void disjCyclesCycGen(int *partition, int len, int n, int eps){
         Lev[i-1] = i;
         Rev[i-1] = i;
     }
-    //{0,1,2,3,4}, 3 det(1) 2 det(2)
     Lev[n-1] = 0;
     Rev[n-1] = 0;
     int allDet = rr;
-
     // Calculate the total number of cyclic permutations
     int totalCombinations = 1;
     for (int i = 0; i < len; i++) {
         totalCombinations *= 2*partition[i];
     }
-
     int sig = 1;
     if(eps == -1)
         for(int k=0; k<len; k++)
