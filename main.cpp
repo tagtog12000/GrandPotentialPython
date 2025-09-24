@@ -7,7 +7,7 @@
 #include <string>
 #include<bits/stdc++.h>
 using namespace std;
-typedef short int uint;
+//typedef short int uint;
 typedef unsigned long long int ullint;
 //Maximum
 const unsigned int MAX_2N=22,MAX_N=11, MAX_CYC = 1100,MAX_2P2=1000,MAX_C = 10000, MAXT = 100000;
