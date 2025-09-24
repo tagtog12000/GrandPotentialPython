@@ -1109,9 +1109,9 @@ bool Itir(int p, int q, int szALLde, int sig, const int n)
 
                         if(n!=1)
                         {
-                            
+                            cout<<"initialise "<<endl;
                             initialiseLabel(n);
-                            
+                            cout<<"organizeAndWrite "<<endl;
                             organizeAndWrite(n);
                             
                         }
