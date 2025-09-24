@@ -1033,6 +1033,7 @@ void Distrib(int v, int eps, const int n)
             sig = pow(-1,n);
         cout<<"begin 3"<<endl;
         Itir(1,q,szALLdet, sig, n);
+        cout<<"end begin 3"<<endl;
     }
     return;
 }
