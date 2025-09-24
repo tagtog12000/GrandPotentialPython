@@ -1084,8 +1084,10 @@ bool Itir(int p, int q, int szALLde, int sig, const int n)
                     ADD(tpPosL,PosL,n);
                     dv=1;
                     syy=false;
+                    cout<<"BEFORE FILTRE"<<endl;
                     if(!Filtre(1, lnc[q], q, L, tpL, tpPosL, szALLde, n))/*if there is not another equivalent diagram*/
                     {
+                        cout<<"OK FILTRE"<<endl;
                         for(k=1; k<=n; k++)
                             PosR[R[k]]=k;
                         ADD(tpL,L,n);
