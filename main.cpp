@@ -331,11 +331,11 @@ void organizeAndWrite(int n)
     matNomF.resize(prv+1);
     matSignNomF.resize(prv+1);
     matCoefNomF.resize(prv+1);
-    WriteUint("", matDenF);
-    WriteUint("", matSignDenF);
-    WriteUint("", matNomF);
-    WriteUint("", matSignNomF);
-    WriteInt("", matCoefNomF);
+    WriteUint("matDenF", matDenF);
+    WriteUint("matSignDenF", matSignDenF);
+    WriteUint("matNomF", matNomF);
+    WriteUint("matSignNomF", matSignNomF);
+    WriteInt("matCoefNomF", matCoefNomF);
     ullint ttni, ttpo;
     int lo = 1;
     for(int i=0; i<matDenF.size(); i++)
