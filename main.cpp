@@ -7,7 +7,7 @@
 #include <string>
 #include<bits/stdc++.h>
 using namespace std;
-//typedef short int uint;
+typedef short int uint;
 typedef unsigned long long int ullint;
 //Maximum
 const unsigned int MAX_2N=22,MAX_N=11, MAX_CYC = 1100,MAX_2P2=1000,MAX_C = 10000, MAXT = 100000;
@@ -35,8 +35,8 @@ void Sort(ullint * A, ullint * B, unsigned int n);
 unsigned int countSetBits0(ullint n);
 unsigned int countSetBits(ullint n,int p);
 int ToN(ullint n);
-void WriteUint(string st, vector< vector<ullint> > Mat);
-void WriteInt(string st, vector< vector<int> > Mat);
+//void WriteUint(string st, vector< vector<ullint> > Mat);
+//void WriteInt(string st, vector< vector<int> > Mat);
 void DFSUtil(int v, bool visited[], uint *L, uint *R);
 inline void AddToFillLR(uint *L, uint *R, const int n);
 void organizeAndWrite(int n);
@@ -259,12 +259,12 @@ void WriteInt(string st, vector< vector<int> > Mat)
         myfile1<<"[";
         for(int i=0; i<Mat[kk].size(); i++)
         {
-            myfile1 << Mat[kk][i];
+            myfile1<<Mat[kk][i];
             if(i!=Mat[kk].size()-1)
-                myfile1 << ",";
+                myfile1<<",";
         }
         if(kk==Mat.size()-1)
-            myfile1 <<"]";
+            myfile1<<"]";
         else
             myfile1<<"],";
     }
