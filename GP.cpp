@@ -1399,6 +1399,7 @@ int main()
     int n;
     int FerOrBos;
     irrOnly = 2;
+    cout << "Hello begin" << endl;
     //cout << "Enter the order n" << endl;
     aa = 3;
     //cin>>aa;
