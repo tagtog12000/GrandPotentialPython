@@ -1104,7 +1104,7 @@ bool Itir(int p, int q, int szALLde, int sig, const int n)
                                 if(R0[j]==j+1) tde|=1<<(2*j+1);
                             }
                         }
-                        AddToFillLR(tpL,tpR,n);
+                        //AddToFillLR(tpL,tpR,n);
                         syym = -sig*(dv-1);
 
                         if(n!=1)
