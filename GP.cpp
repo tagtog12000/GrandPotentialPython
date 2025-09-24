@@ -38,7 +38,6 @@ int ToN(ullint n);
 //void WriteUint(string st, vector< vector<ullint> > Mat);
 //void WriteInt(string st, vector< vector<int> > Mat);
 void DFSUtil(int v, bool visited[], uint *L, uint *R);
-inline void AddToFillLR(uint *L, uint *R, const int n);
 void organizeAndWrite(int n);
 bool evalCycle(ullint CY,const int n);
 bool validCycle(ullint CY,const int n);
@@ -93,7 +92,7 @@ int numbCy[MAX_N] = {0};
 int TotD = 0;
 int irrOnly = 2;
 uint branches[MAX_N][MAX_N], chords[MAX_N][MAX_2N], degVrtx[MAX_N] = {0};
-ofstream myfile, myfilec, tex;
+
 
 void SortBit2D(const vector< vector<ullint> > &vec2D, unsigned int b, unsigned int be, unsigned int en)
 {
@@ -282,14 +281,6 @@ void DFSUtil(int v, bool visited[], uint *L, uint *R)
         DFSUtil(R[v], visited,L,R);
 }
 
-inline void AddToFillLR(uint *L, uint *R, const int n)
-{
-    myfile<<"{";
-    for(int k=1; k<n; k++)
-        myfile<<L[k]<<","<<R[k]<<",";
-    myfile<<L[n]<<","<<R[n]<<"}";
-}
-
 void organizeAndWrite(int n)
 {
     vector< vector<ullint>> matNomF, matSignNomF, matDenF, matSignDenF;
@@ -331,73 +322,13 @@ void organizeAndWrite(int n)
     matNomF.resize(prv+1);
     matSignNomF.resize(prv+1);
     matCoefNomF.resize(prv+1);
+    cout<<"writting ..."<<endl;
     WriteUint("matDenF", matDenF);
     WriteUint("matSignDenF", matSignDenF);
     WriteUint("matNomF", matNomF);
     WriteUint("matSignNomF", matSignNomF);
     WriteInt("matCoefNomF", matCoefNomF);
-    ullint ttni, ttpo;
-    int lo = 1;
-    for(int i=0; i<matDenF.size(); i++)
-    {
-        tex<<"\\frac{";
-        for(int j=0; j<matNomF[i].size(); j++)
-        {
-            if(matCoefNomF[i][j]==-1)
-                tex<<"-";
-            else if(matCoefNomF[i][j]==1)
-                tex<<"+";
-            else if(matCoefNomF[i][j]<-1)
-                tex<<matCoefNomF[i][j];
-            else
-                tex<<"+"<<matCoefNomF[i][j];
-            ttni=matSignNomF[i][j];
-            ttpo=matNomF[i][j]^ttni;
-            lo = 1;
-            while(ttni)
-            {
-                if(ttni&1)
-                    tex<<"f_{"<<lo<<"}^{-}";
-                ttni>>=1;
-                lo++;
-            }
-            lo = 1;
-            while(ttpo)
-            {
-                if(ttpo&1)
-                    tex<<"f_{"<<lo<<"}^{+}";
-                ttpo>>=1;
-                lo++;
-            }
-        }
-        tex<<"}{";
-        for(int j=0; j<matDenF[i].size(); j++)
-        {
-            ttni=matSignDenF[i][j];
-            ttpo=matDenF[i][j]^ttni;
-            lo = 1;
-            tex<<"(";
-            while(ttni)
-            {
-                if(ttni&1)
-                    tex<<"-E_{"<<lo<<"}";
-                ttni>>=1;
-                lo++;
-            }
-            lo = 1;
-            while(ttpo)
-            {
-                if(ttpo&1)
-                    tex<<"+E_{"<<lo<<"}";
-                ttpo>>=1;
-                lo++;
-            }
-            tex<<")";
-        }
-        tex<<"}";
-        tex<<"\\\\";
-        tex<<endl;
-    }
+    cout<<"done writting"<<endl;
 }
 
 bool evalCycle(ullint CY,const int n)
@@ -1174,40 +1105,17 @@ bool Itir(int p, int q, int szALLde, int sig, const int n)
                             }
                         }
                         AddToFillLR(tpL,tpR,n);
-                        myfile<<",";
                         syym = -sig*(dv-1);
-                        myfile<<syym<<",";
-                        tex<<"\\[";
-                        if(syym<0 && syym!=-1)
-                            tex<<"-\\frac{1}{"<<-syym<<"}";
-                        else if(syym>0 && syym!=1)
-                            tex<<"+\\frac{1}{"<<syym<<"}";
-                        else if (syym==-1)
-                            tex<<"-";
-                        else if (syym==+1)
-                            tex<<"+";
-                        for(k=1; k<=n; k++)
-                        {
-                            tex<<"\\{"<<2*k-1<<","<<2*k<<"|V|"<<2*tpL[k]-1<<","<<2*tpR[k]<<"\\}";
-                        }
-                        for(k = 1; k<=n; k++)
-                        {
-                            if(tpL[k]==k)
-                                tex<<"f_{"<<2*tpL[k]-1<<"}^{-}";
-                            if(tpR[k]==k)
-                                tex<<"f_{"<<2*tpR[k]<<"}^{-}";
-                        }
 
                         if(n!=1)
                         {
-                            tex<<"\\left(";
+                            
                             initialiseLabel(n);
-                            tex<<"\\begin{array}{rcl}";
+                            
                             organizeAndWrite(n);
-                            tex<<"\\end{array}";
-                            tex<<"\\right)";
+                            
                         }
-                        tex<<"\\]";
+                        
                         LN++;
                     }
                 }
@@ -1491,7 +1399,6 @@ int main()
     int n;
     int FerOrBos;
     irrOnly = 2;
-    ostringstream stm ;
     //cout << "Enter the order n" << endl;
     aa = 3;
     //cin>>aa;
@@ -1537,26 +1444,7 @@ int main()
                     posZero.resize(2*maxD), posOne.resize(2*maxD);
                     bitOne.resize(2*maxD), bitZero.resize(2*maxD);
                     CycGen(n);
-                    stm<<n;
-                    string sn = stm.str();
-                    string ss0="GrandPotential", ss1=".txt", sstx1=".tex";
-                    string ss=ss0+sn+ss1, sstx=ss0+sn+sstx1;
-                    myfile.open(ss);
-                    myfile<<"{";
-                    tex.open(sstx);
-                    tex<<"\\documentclass{article}"<<endl;
-                    tex<<"\\usepackage{geometry}"<<endl;
-                    tex<<"\\geometry{paperwidth=60cm,left=2cm,right=2cm,paperheight=29.7cm,top=1cm,height=26.5cm}"<<endl;
-                    tex<<"\\usepackage{amsmath}"<<endl;
-                    tex<<"\\begin{document}"<<endl;
-                    tex<<"The grand potential of the order "<<n<<endl;
-                    tex<<"\\[\\Omega_{"<<sn<<"} = \\]"<<endl;
                     Distrib(v, FerOrBos, n);
-                    tex<<endl;
-                    tex<<"\\end{document}"<<endl;
-                    tex.close();
-                    myfile<<"Nothing}";
-                    myfile.close();
                 }
             }
         }
