@@ -12,6 +12,12 @@
 using namespace std;
 typedef unsigned long long int ullint;
 
+//writting the expression in tex format
+vector<vector<pair<int,int>>> allGraphs;
+vector<vector<vector<pair<ullint,ullint>>>> matDenNigFinal;
+vector<vector<vector<pair<ullint,ullint>>>> matNumSignFinal;
+vector<vector<vector<int>>> matCoefFinal;
+
 //simple swap function
 void swap(int *arr, int v1, int v2){
     int tps = arr[v1];
@@ -28,50 +34,67 @@ void Swap(int *L, int *PosL, int v1, int v2){
     return;
 }
 //writing
-void WriteUint(const string st, const vector< vector< pair<ullint,ullint>>> &Mat){
-    string filename = st + ".txt";
-    ofstream myfile(filename);
+void WriteUint(const string st, const vector< vector< vector< pair<ullint,ullint>>>> &Mat){
+    ofstream myfile(st);
+
     if (!myfile.is_open()) {
-        cerr << "Error: could not open " << filename << endl;
+        cerr << "Error: could not open " << st << endl;
         return;
     }
+
     myfile<<"[";
-    for(int kk=0; kk<Mat.size(); kk++){
-        myfile<<"[";
-        for(int i=0; i<Mat[kk].size(); i++){
-            myfile<<"["<<Mat[kk][i].first<<","<<Mat[kk][i].second<<"]";
-            if(i!=Mat[kk].size()-1)
-                myfile<<",";
-        }
-        if(kk==Mat.size()-1)
-            myfile<<"]";
+    for(size_t i = 0; i<Mat.size(); i++){
+        if(i!=0)
+            myfile<<",[";
         else
-            myfile<<"],";
+            myfile<<"[";
+        for(int kk=0; kk<Mat[i].size(); kk++){
+            myfile<<"[";
+            for(int j=0; j<Mat[i][kk].size(); j++){
+                myfile<<"["<<Mat[i][kk][j].first<<","<<Mat[i][kk][j].second<<"]";
+                if(j!=Mat[i][kk].size()-1)
+                    myfile<<",";
+            }
+            if(kk==Mat[i].size()-1)
+                myfile<<"]";
+            else
+                myfile<<"],";
+        }
+        myfile<<"]";
     }
     myfile<<"]";
+    myfile.close();
 }
 //write int vector
-void WriteInt(const string st, const vector< vector<int>> &Mat){
-    string filename = st + ".txt";
-    ofstream myfile(filename);
+void WriteInt(const string st, const vector< vector< vector<int>>> &Mat){
+    ofstream myfile(st);
     if (!myfile.is_open()) {
-        cerr << "Error: could not open " << filename << endl;
+        cerr << "Error: could not open " << st << endl;
         return;
     }
+
     myfile<<"[";
-    for(int kk=0; kk<Mat.size(); kk++){
-        myfile<<"[";
-        for(int i=0; i<Mat[kk].size(); i++){
-            myfile<<Mat[kk][i];
-            if(i!=Mat[kk].size()-1)
-                myfile<<",";
-        }
-        if(kk==Mat.size()-1)
-            myfile<<"]";
+    for(size_t i = 0; i<Mat.size(); i++){
+        if(i!=0)
+            myfile<<",[";
         else
-            myfile<<"],";
+            myfile<<"[";
+        for(int kk=0; kk<Mat[i].size(); kk++){
+            myfile<<"[";
+            for(int j=0; j<Mat[i][kk].size(); j++){
+                myfile<<Mat[i][kk][j];
+                if(j!=Mat[i][kk].size()-1)
+                    myfile<<",";
+            }
+            if(kk==Mat[i].size()-1)
+                myfile<<"]";
+            else
+                myfile<<"],";
+        }
+        myfile<<"]";
     }
     myfile<<"]";
+    myfile.close();
 }
 //count the number of bits one in a given unsigned integer n
 unsigned int countSetBits(ullint n){
@@ -242,29 +265,6 @@ void findFundamentalCyclesGr(vector<ullint> &fundCycles, ullint spanningTree, ul
         coTree &= coTree - 1;
     }
 }
-//writting the expression in tex format
-vector<vector<pair<int,int>>> allGraphs;
-void writtingTex(vector<vector<pair<ullint,ullint>>> &matDenNigF, vector<vector<pair<ullint,ullint>>> &matNumSignF, vector<vector<int>> &matCoefF, int n){
-    ostringstream stm;
-    stm<<n;
-    string sn = stm.str();
-    ofstream fout("graphs"+sn+".txt");
-    fout << "[";
-    for (size_t g = 0; g < allGraphs.size(); g++) {
-        fout << "[";
-        for (size_t i = 0; i < allGraphs[g].size(); i++) {
-            fout << "(" << allGraphs[g][i].first << "," << allGraphs[g][i].second << ")";
-            if (i + 1 < allGraphs[g].size()) fout << ", ";
-        }
-        fout << "]";
-        if (g + 1 < allGraphs.size()) fout << ",";
-    }
-    fout << "]";
-    fout.close();
-    WriteUint("matDenNigF"+sn, matDenNigF);
-    WriteUint("matNumSignF"+sn, matNumSignF);
-    WriteInt("matCoefF"+sn, matCoefF);
-}
 //simplify
 void simplify(const vector<vector<pair<ullint,ullint>>> &matDenNig, const vector<pair<ullint,ullint>> &matNumSign, vector<vector<pair<ullint,ullint>>> &matDenNigF, vector<vector<pair<ullint,ullint>>> &matNumSignF, vector<vector<int>> &matCoefF, int n){
     int szDD = matDenNig.size();
@@ -384,7 +384,9 @@ void fractions(const vector<ullint> &allSpanTrees, const vector<pair<ullint,ulli
     vector< vector<pair<ullint,ullint>>> matDenNigF, matNumSignF;
     vector< vector<int>> matCoefF;
     simplify(matDenNig, matNumSign, matDenNigF, matNumSignF, matCoefF, n);//simplify all fractions
-    writtingTex(matDenNigF, matNumSignF, matCoefF, n);//writing in tex format
+    matDenNigFinal.push_back(matDenNigF);
+    matNumSignFinal.push_back(matNumSignF);
+    matCoefFinal.push_back(matCoefF);
 }
 //The cartesian product of the compressed spanning trees
 void combineBits(const vector<ullint> &numbers, ullint current, int index, vector<ullint> &allSpanTrees) {
@@ -848,6 +850,31 @@ int main() {
     n = 3;
     int partition[n];
     int eps = -1;//-1 for Fermion and +1 for Bosons
+    
     generatePartitions(n, n, partition, 0, eps);
+    ostringstream stm ;
+    stm<<n;
+    string sn = stm.str();
+    string filename1 = "matDenNigF"+sn + ".txt";
+    string filename2 = "matNumSignF"+sn + ".txt";
+    string filename3 = "matCoefF"+sn + ".txt";
+    WriteUint(filename1, matDenNigFinal);
+    WriteUint(filename2, matNumSignFinal);
+    WriteInt(filename3, matCoefFinal);
+
+    ofstream fout("graphs"+sn+".txt");
+    fout << "[";
+    for (size_t g = 0; g < allGraphs.size(); g++) {
+        fout << "[";
+        for (size_t i = 0; i < allGraphs[g].size(); i++) {
+            fout << "(" << allGraphs[g][i].first << "," << allGraphs[g][i].second << ")";
+            if (i + 1 < allGraphs[g].size()) fout << ", ";
+        }
+        fout << "]";
+        if (g + 1 < allGraphs.size()) fout << ",";
+    }
+    fout << "]";
+    fout.close();
+
     return 0;
 }
