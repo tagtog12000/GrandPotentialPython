@@ -15,8 +15,9 @@ typedef unsigned long long int ullint;
 //writting the expression in tex format
 vector<vector<pair<int,int>>> allGraphs;
 vector<ullint> spTr;
+vector< vector< pair<ullint,ullint>>> refDen;
 vector<int> Sym;
-vector<vector<vector<pair<ullint,ullint>>>> matDenNigFinal;
+vector< vector< vector<pair<ullint,ullint>>>> matDenNigFinal;
 vector<vector<vector<pair<ullint,ullint>>>> matNumSignFinal;
 vector<vector<vector<int>>> matCoefFinal;
 
@@ -383,6 +384,7 @@ void fractions(const vector<ullint> &allSpanTrees, const vector<pair<ullint,ulli
         matCf.push_back(1);
     }
     //Simplify and writting
+    refDen.push_back(matDenNig[0]);
     vector< vector<pair<ullint,ullint>>> matDenNigF, matNumSignF;
     vector< vector<int>> matCoefF;
     simplify(matDenNig, matNumSign, matDenNigF, matNumSignF, matCoefF, n);//simplify all fractions
@@ -897,6 +899,20 @@ int main() {
     }
     fout << "]";
     fout.close();
+
+    ofstream refDEN("refDenominators"+sn+".txt");
+    refDEN << "[";
+    for(size_t g = 0; g < refDen.size(); g++) {
+        refDEN << "[";
+        for (size_t i = 0; i < refDen[g].size(); i++) {
+            refDEN << "[" << refDen[g][i].first << "," << refDen[g][i].second << "]";
+            if (i + 1 < refDen[g].size()) refDEN << ", ";
+        }
+        refDEN << "]";
+        if (g + 1 < refDen.size()) refDEN << ",";
+    }           
+    refDEN << "]";
+    refDEN.close();
 
     return 0;
 }
