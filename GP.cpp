@@ -14,6 +14,8 @@ typedef unsigned long long int ullint;
 
 //writting the expression in tex format
 vector<vector<pair<int,int>>> allGraphs;
+vector<ullint> spTr;
+vector<int> Sym;
 vector<vector<vector<pair<ullint,ullint>>>> matDenNigFinal;
 vector<vector<vector<pair<ullint,ullint>>>> matNumSignFinal;
 vector<vector<vector<int>>> matCoefFinal;
@@ -441,6 +443,7 @@ void init(int *L, int *R, int n){
     spanningTreesGenerator(trs, Edg, n-1, allSpanTrees);//Steps 1: Generate all spanning trees   
     ullint refSpanTree = allSpanTrees[0];//Select an arbitrary spanning tree as reference tree
     ullint coTree = ((1ULL<< (2 * n)) - 1) & (~refSpanTree); // Co-tree is the complement of the spanning tree
+    spTr.push_back(refSpanTree);
     vector<ullint> FundamentalCycles, allCycles, totCycles;
     findFundamentalCyclesGr(FundamentalCycles, refSpanTree, coTree, nodes, edgL);//First we compute the fundamental cycles of the diagram
     allCombination(FundamentalCycles, nodes, edgesOut, allCycles, totCycles);//Now we generate all cycles
@@ -826,6 +829,7 @@ void disjCyclesCycGen(int *partition, int len, int n, int eps){
                 }
                 if(canonic){ //Save the results
                     sym = -sig*dv;
+                    Sym.push_back(sym);
                     init(L, R, n);
                 }
             }
@@ -847,7 +851,7 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
 // Main function
 int main() {
     int n;
-    n = 3;
+    n = 4;
     int partition[n];
     int eps = -1;//-1 for Fermion and +1 for Bosons
     
@@ -861,6 +865,24 @@ int main() {
     WriteUint(filename1, matDenNigFinal);
     WriteUint(filename2, matNumSignFinal);
     WriteInt(filename3, matCoefFinal);
+
+    ofstream SPout("spanningTrees"+sn+".txt");
+    SPout << "[";
+    for (size_t g = 0; g < spTr.size(); g++) {
+        SPout << spTr[g];
+        if (g + 1 < spTr.size()) SPout << ",";
+    }
+    SPout << "]";
+    SPout.close();
+
+    ofstream SYM("symmetries"+sn+".txt");
+    SYM << "[";
+    for (size_t g = 0; g < Sym.size(); g++) {
+        SYM << Sym[g];
+        if (g + 1 < Sym.size()) SYM << ",";
+    }
+    SYM << "]";
+    SYM.close();
 
     ofstream fout("graphs"+sn+".txt");
     fout << "[";
