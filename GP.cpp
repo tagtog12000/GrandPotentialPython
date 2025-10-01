@@ -877,7 +877,7 @@ int main() {
     SPout << "]";
     SPout.close();
 
-    ofstream SYM("symmetries-"+sn+".txt");
+    ofstream SYM("symmetries-"+sn+".dat");
     SYM << "[";
     for (size_t g = 0; g < Sym.size(); g++) {
         SYM << Sym[g];
