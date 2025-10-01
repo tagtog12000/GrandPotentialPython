@@ -856,7 +856,6 @@ int main() {
     n = 4;
     int partition[n];
     int eps = -1;//-1 for Fermion and +1 for Bosons
-    
     generatePartitions(n, n, partition, 0, eps);
     ostringstream stm ;
     stm<<n;
