@@ -861,14 +861,14 @@ int main() {
     ostringstream stm ;
     stm<<n;
     string sn = stm.str();
-    string filename1 = "matDenNigF"+sn + ".txt";
-    string filename2 = "matNumSignF"+sn + ".txt";
-    string filename3 = "matCoefF"+sn + ".txt";
+    string filename1 = "matDenNigF"+sn + ".dat";
+    string filename2 = "matNumSignF"+sn + ".dat";
+    string filename3 = "matCoefF"+sn + ".dat";
     WriteUint(filename1, matDenNigFinal);
     WriteUint(filename2, matNumSignFinal);
     WriteInt(filename3, matCoefFinal);
 
-    ofstream SPout("spanningTrees"+sn+".txt");
+    ofstream SPout("spanningTrees"+sn+".dat");
     SPout << "[";
     for (size_t g = 0; g < spTr.size(); g++) {
         SPout << spTr[g];
@@ -886,7 +886,7 @@ int main() {
     SYM << "]";
     SYM.close();
 
-    ofstream fout("graphs"+sn+".txt");
+    ofstream fout("graphs"+sn+".dat");
     fout << "[";
     for (size_t g = 0; g < allGraphs.size(); g++) {
         fout << "[";
@@ -900,7 +900,7 @@ int main() {
     fout << "]";
     fout.close();
 
-    ofstream refDEN("refDenominators"+sn+".txt");
+    ofstream refDEN("refDenominators"+sn+".dat");
     refDEN << "[";
     for(size_t g = 0; g < refDen.size(); g++) {
         refDEN << "[";
