@@ -854,11 +854,15 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
 int main() {
     int n;
     n = 4;
+    cout<<"Enter n";
+    cin >> n;
     int partition[n];
+    cout << "Enter -1 for fermions and +1 bosons";
     int eps = -1;//-1 for Fermion and +1 for Bosons
+    cin >> eps;
     generatePartitions(n, n, partition, 0, eps);
     ostringstream stm ;
-    stm<<n;
+    stm << n;
     string sn = stm.str();
     string filename1 = "matDenNigF-"+sn + ".dat";
     string filename2 = "matNumSignF-"+sn + ".dat";
