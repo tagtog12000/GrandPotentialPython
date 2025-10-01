@@ -916,6 +916,9 @@ int main() {
     }           
     refDEN << "]";
     refDEN.close();
-
+    
+    ofstream refN("N.dat");
+    refN << n ;
+    refN.close();
     return 0;
 }
