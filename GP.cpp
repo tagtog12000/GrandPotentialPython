@@ -140,7 +140,7 @@ void writtingTexD(const string st, vector<vector<vector<pair<ullint,ullint>>>> &
             for(int j = 0; j<denNigFr.size(); j++)
             {
                 if(denNigFr[j].size() == 0) continue;
-                myfile<<"["<<brTr[j]<<",[";
+                myfile<<"[["<<brTr[j]<<", 0],";
                 for(int k = 0; k<denNigFr[j].size(); k++){   
                     if(denNigFr[j][k].second & brTr[j]){
                         snd = -snd;
@@ -158,9 +158,9 @@ void writtingTexD(const string st, vector<vector<vector<pair<ullint,ullint>>>> &
                     myfile<<"]";
                 }
                 if(j == denNigFr.size()-1)
-                myfile<<"]";
+                myfile<<"";
                 else
-                myfile<<"],";
+                myfile<<",";
             }
             if(i == matDenNigF.size()-1)
                 myfile<<"],"<<snd;
@@ -732,6 +732,7 @@ void fractions(const vector<ullint> &allSpanTrees, ullint refSpanTree, const vec
     }
     refDen.push_back(matDenNig[0]);
     if(redDiag){
+        cout<<"there is a Divided difference "<<endl;
         dividedDifferences(allSpanTrees, refSpanTree, denominatorsNig0, edgesOut, nodes, edgL, nigCyclesCy, n);
     }
     //Simplify and writting
