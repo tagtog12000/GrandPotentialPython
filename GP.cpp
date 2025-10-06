@@ -17,9 +17,9 @@ vector<vector<pair<int,int>>> allGraphs;
 vector<ullint> spTr;
 vector< vector< pair<ullint,ullint>>> refDen;
 vector<int> Sym;
-vector< vector< vector<pair<ullint,ullint>>>> matDenNigFinal;
-vector<vector<vector<pair<ullint,ullint>>>> matNumSignFinal;
-vector<vector<vector<int>>> matCoefFinal;
+vector< vector< vector<pair<ullint,ullint>>>> matDenNigFinal, matNumSignFinal, matDenNigFinalD, matNumSignFinalD;
+vector<vector<vector<int>>> matCoefFinal, matCoefFinalD;
+vector<vector<ullint>> rmbFinal;
 
 //simple swap function
 void swap(int *arr, int v1, int v2){
@@ -65,6 +65,110 @@ void WriteUint(const string st, const vector< vector< vector< pair<ullint,ullint
         }
         myfile<<"]";
     }
+    myfile<<"]";
+    myfile.close();
+}
+
+void SplDen2(const vector<pair<ullint,ullint>> &denNig, const vector<ullint> &rmbT, vector<vector<pair<ullint,ullint>>> &denNigFr, int j, vector<ullint> &brTr){
+    vector<pair<ullint,ullint>> tds, cfn;
+    int szs = 0;
+    for(const auto& denn: denNig){
+        if(denn.first & rmbT[j]){
+            szs++;
+            tds.push_back(denn);
+        } else {
+            cfn.push_back(denn);
+        }
+    }
+
+    denNigFr.push_back(tds);
+    brTr.push_back(rmbT[j]);
+    if(szs != denNig.size()){
+        SplDen2(cfn, rmbT, denNigFr, j+1, brTr);
+    }
+}
+//writting the expression in divided difference text format
+void writtingTexD(const string st, vector<vector<vector<pair<ullint,ullint>>>> &matDenNigFin, vector<vector<vector<pair<ullint,ullint>>>> &matNumSignFin, vector<vector<vector<int>>> &matCoefFin, const vector<vector<ullint>> &rmbFin){
+    ofstream myfile(st);
+    if (!myfile.is_open()) {
+        cerr << "Error: could not open " << st << endl;
+        return;
+    }
+    myfile<<"[";
+    for(size_t i0 = 0; i0<matDenNigFin.size(); i0++)
+    {
+        if(i0!=0)
+            myfile<<",[";
+        else
+            myfile<<"[";
+        vector<vector<pair<ullint,ullint>>> matDenNigF = matDenNigFin[i0];
+        vector<vector<pair<ullint,ullint>>> matNumSignF = matNumSignFin[i0];
+        vector<vector<int>> matCoefF = matCoefFin[i0];
+        vector<ullint> rmb = rmbFin[i0];
+        for(int i = 0; i<matDenNigF.size();i++){
+            vector<vector<pair<ullint,ullint>>> denNigFr;
+            vector<ullint> brTr;
+            SplDen2(matDenNigF[i], rmb, denNigFr, 0, brTr);
+            vector<ullint> brTre;
+            for(int j = 0; j<brTr.size(); j++){
+                if(denNigFr[j].size() == 0) continue;
+                brTre.push_back(brTr[j]);
+            }
+            myfile<<"[";
+            for(int j = 0; j<matNumSignF[i].size();j++){
+                for(int k = 0; k<brTre.size(); k++){
+                    if(matNumSignF[i][j].second & brTre[k]){
+                        matNumSignF[i][j].first ^= brTre[k];
+                        matNumSignF[i][j].second ^= brTre[k];
+                    } else {
+                        matNumSignF[i][j].first ^= brTre[k];
+                    }
+                }
+                myfile<<"["<<matCoefF[i][j]<<","<<matNumSignF[i][j].first<<","<<matNumSignF[i][j].second<<"]";
+                if(j != matNumSignF[i].size()-1)
+                myfile<<",";
+            }
+            myfile<<"],[";
+            for(int j = 0; j<denNigFr.size(); j++){
+                if(denNigFr[j].size() == 0) continue;
+                myfile<<denNigFr[j].size();
+                if(j != denNigFr.size()-1)
+                myfile<<",";
+            }
+            myfile<<"],[";
+            int snd = 1;
+            for(int j = 0; j<denNigFr.size(); j++)
+            {
+                if(denNigFr[j].size() == 0) continue;
+                myfile<<"["<<brTr[j]<<",[";
+                for(int k = 0; k<denNigFr[j].size(); k++){   
+                    if(denNigFr[j][k].second & brTr[j]){
+                        snd = -snd;
+                        denNigFr[j][k].second ^= brTr[j];
+                        denNigFr[j][k].first ^= brTr[j];
+    
+                    } else {
+                        denNigFr[j][k].first ^= brTr[j];
+                        denNigFr[j][k].second ^= denNigFr[j][k].first;
+                    }
+                    myfile<<"["<<denNigFr[j][k].first<<","<<denNigFr[j][k].second<<"]";
+                    if(k != denNigFr[j].size()-1)
+                    myfile<<",";
+                    else
+                    myfile<<"]";
+                }
+                if(j == denNigFr.size()-1)
+                myfile<<"]";
+                else
+                myfile<<"],";
+            }
+            if(i == matDenNigF.size()-1)
+                myfile<<"],"<<snd;
+                else
+                myfile<<"],"<<snd<<",";
+        }
+        myfile<<"]";
+    }    
     myfile<<"]";
     myfile.close();
 }
@@ -318,6 +422,189 @@ void simplify(const vector<vector<pair<ullint,ullint>>> &matDenNig, const vector
     matNumSignF.resize(prv+1);
     matCoefF.resize(prv+1);
 }
+//convert to divided difference
+void SplDen(const vector<pair<ullint,ullint>> &denNig, const vector<ullint> &rmbT, vector<vector<pair<ullint,ullint>>> &denNigFr, int j){
+    vector<pair<ullint,ullint>> tds, cfn;
+    int szs = 0;
+    for(const auto& denn: denNig){
+        if(denn.first & rmbT[j]){
+            szs++;
+            tds.push_back(denn);
+        } else {
+            cfn.push_back(denn);
+        }
+    }
+
+    denNigFr.push_back(tds);
+
+    if(szs != denNig.size()){
+        SplDen(cfn, rmbT, denNigFr, j+1);
+    }
+}
+
+void apart0(pair<ullint,ullint> &denNi1, pair<ullint,ullint> &denNi2, ullint vr1, ullint vr2){
+    bool sg = false;
+    if(vr1 & denNi1.second){
+        denNi1.second ^= denNi1.first;
+        denNi2.second ^= denNi2.first;
+        sg = true;
+    }
+    ullint tNig1 = denNi1.second, dad = denNi1.first & denNi2.first;
+    if(((!(vr2 & denNi1.second)) && (!(vr2 & denNi2.second)))   ||((vr2 & denNi1.second) && (vr2 & denNi2.second))) {
+        denNi1.second = (denNi2.second | (denNi1.first^denNi1.second))^dad;
+        denNi2.second = (tNig1 | (denNi2.first^denNi2.second))^dad;
+    } else if(((!(vr2 & denNi1.second)) && (vr2 & denNi2.second))||((vr2 & denNi1.second)&&(!(vr2 & denNi2.second)))) {
+        denNi1.second = (denNi2.second | denNi1.second)^dad;
+        denNi2.second = (denNi2.second | tNig1)^dad;
+    }
+    else {
+        cout<<"There is error!"<<endl;
+    }
+    denNi1.first ^= denNi2.first;
+    denNi2.first = denNi1.first;
+    if(sg) {
+        denNi1.second ^= denNi1.first;
+        denNi2.second ^= denNi2.first;
+    }
+}
+
+
+void apart1(const vector<pair<ullint,ullint>> &vecdeNi1, vector<vector <pair<ullint,ullint>>> &FFLDeNi, pair<ullint,ullint> deNi2, ullint vr1, ullint vr2, int i){
+    if(i == vecdeNi1.size()) {
+        vector <pair<ullint,ullint>> vecdeNit;
+        vecdeNit = vecdeNi1;
+        vecdeNit.push_back(deNi2);
+        FFLDeNi.push_back(vecdeNit);
+        return;
+    } else if((!(vecdeNi1[i].first & vr1))||(!(vecdeNi1[i].first & vr2))) {
+        apart1(vecdeNi1, FFLDeNi, deNi2, vr1, vr2, i+1);
+    } else {
+        pair<ullint,ullint> ddeNi1 = vecdeNi1[i];
+        pair<ullint,ullint> ddeNi2 = deNi2;
+        apart0(ddeNi1, ddeNi2, vr1, vr2);
+        
+        vector<pair<ullint,ullint>> LideNi11;
+        for(int j = 0; j<i; j++)
+        {
+            LideNi11.push_back(vecdeNi1[j]);
+        }
+        LideNi11.push_back(ddeNi2);
+        for(int j = i+1; j<vecdeNi1.size(); j++)
+        {
+            LideNi11.push_back(vecdeNi1[j]);
+        }
+        //vector<pair<ullint,ullint>> LideNi11(vecdeNi1.begin(), vecdeNi1.begin() + i);
+        //LideNi11.push_back(ddeNi2);
+        //LideNi11.insert(LideNi11.end(), vecdeNi1.begin() + i + 1, vecdeNi1.end());
+
+        vector <pair<ullint,ullint>> vecdeNit = vecdeNi1;
+        vecdeNit.insert(vecdeNit.begin(),ddeNi1);
+        FFLDeNi.push_back(vecdeNit);
+        apart1(LideNi11, FFLDeNi, deNi2, vr1, vr2, i+1);
+    }
+    return;
+}
+
+void apart2(const vector< vector<pair<ullint,ullint>>> &rstDeNi, const vector<pair<ullint,ullint>> &Lden2DeNi, vector< vector<pair<ullint,ullint>>> &TTTDeNi, ullint vr1, ullint vr2, int i, int ii){
+    if(ii == Lden2DeNi.size()) {
+        TTTDeNi.insert(TTTDeNi.end(),rstDeNi.begin(),rstDeNi.end());
+        return;
+    } else {
+        vector< vector<pair<ullint,ullint>>> FFLDeNi;
+        for(int jj = 0; jj<rstDeNi.size(); jj++){
+            apart1(rstDeNi[jj], FFLDeNi, Lden2DeNi[ii], vr1, vr2, i);
+        }
+        apart2(FFLDeNi, Lden2DeNi, TTTDeNi, vr1, vr2, i, ii+1);
+    }
+}
+
+void apart3(const vector< vector<pair<ullint,ullint>>> &tdekDeNi, vector< vector<pair<ullint,ullint>>> &tpDeNi, const vector<ullint> &rmbT, int bg){
+    tpDeNi.push_back(tdekDeNi[bg]);
+    for(int i = bg+1; i<tdekDeNi.size(); i++)
+    {
+        vector< vector<pair<ullint,ullint>>> TTTDeNi;
+        apart2(tpDeNi, tdekDeNi[i], TTTDeNi, rmbT[bg], rmbT[i], 0, 0);
+        tpDeNi = TTTDeNi;
+    }
+}
+
+void apart4(const vector< vector<pair<ullint,ullint>>> &tdekDeNi, const vector<ullint> &rmbT, vector< vector<pair<ullint,ullint>>> &ttDeNi)
+{
+    if(tdekDeNi.size() == 1){
+        ttDeNi = tdekDeNi;
+        return;
+    } else {
+        vector< vector<pair<ullint,ullint>>> tpDeNi;
+        apart3(tdekDeNi, tpDeNi, rmbT, 0);
+        ttDeNi = tpDeNi;
+        for(int p = 1; p<tdekDeNi.size()-1; p++) {
+            vector< vector< vector<pair<ullint,ullint>>>> tdkDeNi;
+
+            for(int i = 0; i<ttDeNi.size(); i++){
+                vector< vector<pair<ullint,ullint>>> denNigFr0;
+                SplDen(ttDeNi[i], rmbT, denNigFr0, 0);
+                tdkDeNi.push_back(denNigFr0);
+            }
+            ttDeNi.clear();
+            ttDeNi.shrink_to_fit();
+            for(int i = 0; i<tdkDeNi.size(); i++){
+                if(tdkDeNi[i].size()<=p)
+                {
+                    vector<pair<ullint,ullint>> ttvdeNi = tdkDeNi[i][0];
+                    for(int j = 1; j<tdkDeNi[i].size(); j++){
+                        ttvdeNi.insert(ttvdeNi.end(),tdkDeNi[i][j].begin(),tdkDeNi[i][j].end());
+                    }
+                    ttDeNi.push_back(ttvdeNi);
+                } else {
+                    vector<pair<ullint,ullint>> ttvdeNi, ttvdeNi0 = tdkDeNi[i][0];
+                    for(int j = 1; j<p; j++) {
+                        ttvdeNi0.insert(ttvdeNi0.end(),tdkDeNi[i][j].begin(),tdkDeNi[i][j].end());
+                    }
+                    vector< vector<pair<ullint,ullint>>> tpDeNi;
+                    apart3(tdkDeNi[i], tpDeNi, rmbT, p);
+
+                    for(int j = 0; j<tpDeNi.size(); j++) {
+                        ttvdeNi = ttvdeNi0;
+                        ttvdeNi.insert(ttvdeNi.end(),tpDeNi[j].begin(),tpDeNi[j].end());
+                        ttDeNi.push_back(ttvdeNi);
+                    }
+                }
+            }
+        }
+    }
+}
+//convert spanning tree to a vector of its branches
+void toBranches(vector<ullint> &rmb, ullint spanTree){
+    while (spanTree){
+        rmb.push_back(spanTree & -spanTree);
+        spanTree &= spanTree -1 ;
+    }
+}
+//filtre some denominators
+bool filtreDen(ullint refSpanTree, ullint spanningTree, const vector<ullint> &rmb, const vector<pair<ullint,ullint>> &denNig){
+    //each denominator denn must contain one of the branches of reference tree
+    for(const auto& denn : denNig){
+        if(!(refSpanTree & denn.first))
+            return false;
+    }
+    //each denominator denn must contain one of the previous branches of reference tree
+    ullint tpr = 0;
+    for(int i=1; i<rmb.size(); i++){
+        tpr |= rmb[i-1];
+        if(rmb[i] & spanningTree){//if the branch i of divisor tree present in spanning tree
+            for(const auto& denn : denNig){
+                if(denn.first & rmb[i]){//find where the place of the branch of the DT in D
+                    if(denn.first & tpr){//If this denominator denn contain one of the previous branches of DT then accept, else refuse
+                        break;
+                    } else {//refuse
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
 //Numerator
 void numerator(ullint &sigNum, ullint coTree, const vector< pair<ullint,ullint>> &nigCyclesCy){
     ullint tail;
@@ -365,26 +652,90 @@ void denominator(ullint spanningTree, const vector<ullint> edgesOut, const vecto
     }
     denominatorsNig.pop_back();//delete the last element
 }
+//divided difference
+void dividedDifferences(const vector<ullint> &allSpanTrees, ullint refSpanTree, const vector<pair<ullint,ullint>> &denominatorsNig0, const vector<ullint> &edgesOut, 
+                        const vector<ullint> &nodes, const vector<pair<int,int>> &edgL, const vector< pair<ullint,ullint>> &nigCyclesCy, int n){
+    vector<ullint> rmb;
+    ullint coTree;
+    toBranches(rmb, refSpanTree);
+    vector<vector<pair<ullint,ullint>>> matDenNigD;
+    vector<pair<ullint,ullint>> matNumSignD, denominatorsNig;
+    //Find the conservation variables to reduice the integration from 2*n to n+1
+    coTree = ((1ULL<< (2 * n)) - 1) & (~refSpanTree);
+    matDenNigD.reserve(allSpanTrees.size());
+    matNumSignD.reserve(allSpanTrees.size());
+    for(const auto& spanningTree: allSpanTrees){
+        coTree = ((1ULL<< (2 * n)) - 1) & (~spanningTree);//the co-Tree
+        if(!(coTree & rmb[0])) continue; //If the first branch it is not in the co-tree, then ignore
+        if(spanningTree & rmb[0]) continue;//If the first branch it is in the spanning tree, then ignore
+        denominatorsNig = denominatorsNig0;
+        denominator(spanningTree, edgesOut, nodes, edgL, denominatorsNig);//generate the denominator
+        if(filtreDen(refSpanTree, spanningTree, rmb, denominatorsNig)){
+            vector< vector<pair<ullint,ullint>>> ttDeNi;
+            ullint nTr = refSpanTree ^ (spanningTree & refSpanTree);//The branches of references tree whose not included in the spanning tree
+            vector<ullint> rmbT;
+            toBranches(rmbT, nTr);
+            vector< vector<pair<ullint,ullint>>> denNigFr;
+            SplDen(denominatorsNig, rmbT, denNigFr, 0);
+            apart4(denNigFr, rmbT, ttDeNi);
+            ullint sigNum = 0;
+            numerator(sigNum, coTree, nigCyclesCy);//generate the numerator
+            for(int i = 0; i<ttDeNi.size(); i++){
+                sort(ttDeNi[i].begin(),ttDeNi[i].end());
+                matDenNigD.push_back(ttDeNi[i]);
+                matNumSignD.emplace_back(coTree,sigNum);
+            }
+        }
+    }
+    vector< vector<pair<ullint,ullint>>> matDenNigDF, matNumSignDF;
+    vector< vector<int>> matCoefDF;
+    simplify(matDenNigD, matNumSignD, matDenNigDF, matNumSignDF, matCoefDF, n);//simplify all fractions
+    matDenNigFinalD.push_back(matDenNigDF);
+    matNumSignFinalD.push_back(matNumSignDF);
+    matCoefFinalD.push_back(matCoefDF);
+    rmbFinal.push_back(rmb);
+}
 //fractions
-void fractions(const vector<ullint> &allSpanTrees, const vector<pair<ullint,ullint>> &denominatorsNig0, const vector<ullint> &edgesOut, const vector<ullint> &nodes, 
+void fractions(const vector<ullint> &allSpanTrees, ullint refSpanTree, const vector<pair<ullint,ullint>> &denominatorsNig0, const vector<ullint> &edgesOut, const vector<ullint> &nodes, 
                 const vector<pair<int,int>> &edgL, const vector< pair<ullint,ullint>> &nigCyclesCy, int n){
     vector<vector<pair<ullint,ullint>>> matDenNig;
     vector<pair<ullint,ullint>> matNumSign, denominatorsNig;
     vector<int> matCf;
     matDenNig.reserve(allSpanTrees.size());
     matNumSign.reserve(allSpanTrees.size());
+    bool redDiag = false;//detect the reducible diagrams
     for(const auto& spanningTree: allSpanTrees){
         ullint coTree = ((1ULL<< (2 * n)) - 1) & (~spanningTree);//the co-Tree
         denominatorsNig = denominatorsNig0;
         denominator(spanningTree, edgesOut, nodes, edgL, denominatorsNig);//generate the denominator
+        for(const auto& den :denominatorsNig){
+            int pos = 0;
+            ullint intU = den.first;
+            //cout<<intU<<endl;
+            while (intU) {
+                if(intU & 1){
+                    pos++;
+                }
+                intU >>= 1;
+                
+            }
+            if(pos <= 2){
+                redDiag = true;
+                break;
+            }
+        }
         ullint sigNum = 0;
         numerator(sigNum, coTree, nigCyclesCy);//generate the numerator
         matDenNig.push_back(denominatorsNig);//add the results to a global vector of denominators and their negative parts
         matNumSign.emplace_back(coTree,sigNum);//add the results to a global vector of numerators and their signes
         matCf.push_back(1);
     }
-    //Simplify and writting
     refDen.push_back(matDenNig[0]);
+    if(redDiag){
+        cout<<"there is a Divided difference "<<endl;
+        dividedDifferences(allSpanTrees, refSpanTree, denominatorsNig0, edgesOut, nodes, edgL, nigCyclesCy, n);
+    }
+    //Simplify and writting
     vector< vector<pair<ullint,ullint>>> matDenNigF, matNumSignF;
     vector< vector<int>> matCoefF;
     simplify(matDenNig, matNumSign, matDenNigF, matNumSignF, matCoefF, n);//simplify all fractions
@@ -471,7 +822,7 @@ void init(int *L, int *R, int n){
     for(int i = 0; i<n; i++){
         denominatorsNig0.emplace_back(nodes[i],edgesOut[i]);
     }
-    fractions(allSpanTrees, denominatorsNig0, edgesOut, nodes, edgL, nigCyclesCy, n);
+    fractions(allSpanTrees, refSpanTree, denominatorsNig0, edgesOut, nodes, edgL, nigCyclesCy, n);
 }
 //Helper function for DFS
 void DFSUtil(int *jdfs, int v, bool visited[], int *VrtxDFS, int *L, int *R){
@@ -867,9 +1218,11 @@ int main() {
     string filename1 = "matDenNigF-"+sn + ".dat";
     string filename2 = "matNumSignF-"+sn + ".dat";
     string filename3 = "matCoefF-"+sn + ".dat";
+    string filenameD = "DivDifMB-"+sn + ".dat";
     WriteUint(filename1, matDenNigFinal);
     WriteUint(filename2, matNumSignFinal);
     WriteInt(filename3, matCoefFinal);
+    writtingTexD(filenameD, matDenNigFinalD, matNumSignFinalD, matCoefFinalD, rmbFinal);
 
     ofstream SPout("spanningTrees-"+sn+".dat");
     SPout << "[";
