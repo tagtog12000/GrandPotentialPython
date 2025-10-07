@@ -1202,75 +1202,89 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
 }
 // Main function
 int main() {
-    int n;
-    n = 4;
-    cout<<"Enter n";
-    cin >> n;
-    int partition[n];
+    int nMax;
+    nMax = 6;
+    cout<<"Enter the maximum order of n Max";
+    cin >> nMax;
     cout << "Enter -1 for fermions and +1 bosons";
     int eps = -1;//-1 for Fermion and +1 for Bosons
     cin >> eps;
-    generatePartitions(n, n, partition, 0, eps);
-    ostringstream stm ;
-    stm << n;
-    string sn = stm.str();
-    string filename1 = "matDenNigF-"+sn + ".dat";
-    string filename2 = "matNumSignF-"+sn + ".dat";
-    string filename3 = "matCoefF-"+sn + ".dat";
-    string filenameD = "DivDifMB-"+sn + ".dat";
-    WriteUint(filename1, matDenNigFinal);
-    WriteUint(filename2, matNumSignFinal);
-    WriteInt(filename3, matCoefFinal);
-    writtingTexD(filenameD, matDenNigFinalD, matNumSignFinalD, matCoefFinalD, rmbFinal);
-
-    ofstream SPout("spanningTrees-"+sn+".dat");
-    SPout << "[";
-    for (size_t g = 0; g < spTr.size(); g++) {
-        SPout << spTr[g];
-        if (g + 1 < spTr.size()) SPout << ",";
-    }
-    SPout << "]";
-    SPout.close();
-
-    ofstream SYM("symmetries-"+sn+".dat");
-    SYM << "[";
-    for (size_t g = 0; g < Sym.size(); g++) {
-        SYM << Sym[g];
-        if (g + 1 < Sym.size()) SYM << ",";
-    }
-    SYM << "]";
-    SYM.close();
-
-    ofstream fout("graphs-"+sn+".dat");
-    fout << "[";
-    for (size_t g = 0; g < allGraphs.size(); g++) {
+    for(int n = 2, n <= nMax, n++){
+        int partition[n];    
+        generatePartitions(n, n, partition, 0, eps);
+        ostringstream stm ;
+        stm << n;
+        string sn = stm.str();
+        string filename1 = "matDenNigF-"+sn + ".dat";
+        string filename2 = "matNumSignF-"+sn + ".dat";
+        string filename3 = "matCoefF-"+sn + ".dat";
+        string filenameD = "DivDifMB-"+sn + ".dat";
+        WriteUint(filename1, matDenNigFinal);
+        WriteUint(filename2, matNumSignFinal);
+        WriteInt(filename3, matCoefFinal);
+        writtingTexD(filenameD, matDenNigFinalD, matNumSignFinalD, matCoefFinalD, rmbFinal);
+    
+        ofstream SPout("spanningTrees-"+sn+".dat");
+        SPout << "[";
+        for (size_t g = 0; g < spTr.size(); g++) {
+            SPout << spTr[g];
+            if (g + 1 < spTr.size()) SPout << ",";
+        }
+        SPout << "]";
+        SPout.close();
+    
+        ofstream SYM("symmetries-"+sn+".dat");
+        SYM << "[";
+        for (size_t g = 0; g < Sym.size(); g++) {
+            SYM << Sym[g];
+            if (g + 1 < Sym.size()) SYM << ",";
+        }
+        SYM << "]";
+        SYM.close();
+    
+        ofstream fout("graphs-"+sn+".dat");
         fout << "[";
-        for (size_t i = 0; i < allGraphs[g].size(); i++) {
-            fout << "(" << allGraphs[g][i].first << "," << allGraphs[g][i].second << ")";
-            if (i + 1 < allGraphs[g].size()) fout << ", ";
+        for (size_t g = 0; g < allGraphs.size(); g++) {
+            fout << "[";
+            for (size_t i = 0; i < allGraphs[g].size(); i++) {
+                fout << "(" << allGraphs[g][i].first << "," << allGraphs[g][i].second << ")";
+                if (i + 1 < allGraphs[g].size()) fout << ", ";
+            }
+            fout << "]";
+            if (g + 1 < allGraphs.size()) fout << ",";
         }
         fout << "]";
-        if (g + 1 < allGraphs.size()) fout << ",";
-    }
-    fout << "]";
-    fout.close();
-
-    ofstream refDEN("refDenominators-"+sn+".dat");
-    refDEN << "[";
-    for(size_t g = 0; g < refDen.size(); g++) {
-        refDEN << "[";
-        for (size_t i = 0; i < refDen[g].size(); i++) {
-            refDEN << "[" << refDen[g][i].first << "," << refDen[g][i].second << "]";
-            if (i + 1 < refDen[g].size()) refDEN << ", ";
-        }
-        refDEN << "]";
-        if (g + 1 < refDen.size()) refDEN << ",";
-    }           
-    refDEN << "]";
-    refDEN.close();
+        fout.close();
     
-    ofstream refN("N.dat");
-    refN << n ;
-    refN.close();
+        ofstream refDEN("refDenominators-"+sn+".dat");
+        refDEN << "[";
+        for(size_t g = 0; g < refDen.size(); g++) {
+            refDEN << "[";
+            for (size_t i = 0; i < refDen[g].size(); i++) {
+                refDEN << "[" << refDen[g][i].first << "," << refDen[g][i].second << "]";
+                if (i + 1 < refDen[g].size()) refDEN << ", ";
+            }
+            refDEN << "]";
+            if (g + 1 < refDen.size()) refDEN << ",";
+        }           
+        refDEN << "]";
+        refDEN.close();
+        
+        ofstream refN("N.dat");
+        refN << n ;
+        //Clearing
+        refN.close();
+        matDenNigFinal.clear();
+        matNumSignFinal.clear();
+        matCoefFinal.clear();
+        matDenNigFinalD.clear();
+        matNumSignFinalD.clear();
+        matCoefFinalD.clear();
+        rmbFinal.clear();
+        allGraphs.clear();
+        spTr.clear();
+        refDen.clear();
+        Sym.clear();
+    }
     return 0;
 }
