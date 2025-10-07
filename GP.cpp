@@ -1202,14 +1202,13 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
 }
 // Main function
 int main() {
-    int nMax;
-    nMax = 6;
-    cout<<"Enter the maximum order of n Max";
+    int nMax = 6;
+    cout<<"Enter the maximum order of the many-body perturbation, nMax";
     cin >> nMax;
     cout << "Enter -1 for fermions and +1 bosons";
     int eps = -1;//-1 for Fermion and +1 for Bosons
     cin >> eps;
-    for(int n = 2, n <= nMax, n++){
+    for(int n = 2; n <= nMax; n++){
         int partition[n];    
         generatePartitions(n, n, partition, 0, eps);
         ostringstream stm ;
@@ -1270,7 +1269,7 @@ int main() {
         refDEN << "]";
         refDEN.close();
         
-        ofstream refN("N.dat");
+        ofstream refN("N-"+sn+".dat");
         refN << n ;
         //Clearing
         refN.close();
