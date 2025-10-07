@@ -732,7 +732,6 @@ void fractions(const vector<ullint> &allSpanTrees, ullint refSpanTree, const vec
     }
     refDen.push_back(matDenNig[0]);
     if(redDiag){
-        cout<<"there is a Divided difference "<<endl;
         dividedDifferences(allSpanTrees, refSpanTree, denominatorsNig0, edgesOut, nodes, edgL, nigCyclesCy, n);
     }
     //Simplify and writting
