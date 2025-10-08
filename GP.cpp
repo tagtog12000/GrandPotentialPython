@@ -1202,14 +1202,14 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
 }
 // Main function
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <nMax>\n";
+    if (argc < 3) {
+        std::cerr << "Usage: ./main_exec nMax eps\n";
         return 1;
     }
-
-    int nMax = std::atoi(argv[1]);
-    std::cout << "Running computation for nMax = " << nMax << std::endl;
-    int eps = -1;
+    
+    int nMax = std::stoi(argv[1]);
+    int eps  = std::stoi(argv[2]);
+    
     for(int n = 2; n <= nMax; n++){
         int partition[n];    
         generatePartitions(n, n, partition, 0, eps);
