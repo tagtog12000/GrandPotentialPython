@@ -1209,7 +1209,7 @@ int main(int argc, char* argv[]) {
 
     int nMax = std::atoi(argv[1]);
     std::cout << "Running computation for nMax = " << nMax << std::endl;
-    
+    int eps = -1;
     for(int n = 2; n <= nMax; n++){
         int partition[n];    
         generatePartitions(n, n, partition, 0, eps);
