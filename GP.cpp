@@ -1201,13 +1201,15 @@ void generatePartitions(int n, int nn, int* partition, int currentIndex, int eps
     }
 }
 // Main function
-int main() {
-    int nMax = 6;
-    cout<<"Enter the maximum order of the many-body perturbation, nMax";
-    cin >> nMax;
-    cout << "Enter -1 for fermions and +1 bosons";
-    int eps = -1;//-1 for Fermion and +1 for Bosons
-    cin >> eps;
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <nMax>\n";
+        return 1;
+    }
+
+    int nMax = std::atoi(argv[1]);
+    std::cout << "Running computation for nMax = " << nMax << std::endl;
+    
     for(int n = 2; n <= nMax; n++){
         int partition[n];    
         generatePartitions(n, n, partition, 0, eps);
