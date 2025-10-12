@@ -137,7 +137,7 @@ def build_latex(matCoefF, matNumSignF, matDenNigF, graphs, symmetries, refSpanni
         sym = symmetries[i]
         spTr = refSpanningTrees[i]
         edges = graphs[i]
-        loadCode.draw_multidigraph(edges)
+        draw_multidigraph(edges)
         pot = ""
         for j in range(n):
             pot += "\\langle "+str(2*j+1) + "," + str(2*j+2) + " || "  + str(2*edges[2*j+1][1] - 1)+ ","  + str(2*edges[2*j+1][1]) + " \\rangle"
