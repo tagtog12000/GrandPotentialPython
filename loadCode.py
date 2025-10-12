@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from collections import Counter
 import math
+from IPython.display import display, Latex, HTML
 
 def draw_multidigraph(G_edges, radius=2.0, figsize=(4,4), node_color="orange"):
     # Build graph
@@ -23,6 +24,122 @@ def draw_multidigraph(G_edges, radius=2.0, figsize=(4,4), node_color="orange"):
 
     # Track drawn edges
     drawn = set()
+
+    def toInt(intU: int):
+    lis = []
+    pos = 1
+    while intU:
+        if intU & 1:
+            lis.append(pos)
+        intU >>= 1
+        pos += 1
+    return lis;
+
+def bit_positions(n):
+    return [f"p_{i+1}" for i in range(n.bit_length()) if (n >> i) & 1]
+
+def writeUlli(intU: int, s1: str, sm: str, s2: str, s0, bol = 1):
+    tex=""
+    pos = 1
+    pos0 = 1
+    while intU:
+        if intU & 1:
+            if pos0 == 1:
+                if bol == 0:
+                    tex+=s1+sm+str(pos)+s2
+                else:
+                    tex+=s0+s1+str(pos)+s2
+                pos0 += 1
+            else:
+                tex+=s0+s1+sm+str(pos)+s2
+        intU >>= 1
+        pos += 1
+    return tex;
+
+def remplaceVariable(refDens: list, var: str, spTr: int):
+    remP = {}   # dictionary for remplacing variables
+    for refDen in refDens:
+        posD = refDen[0] ^ refDen[1]
+        if posD & spTr:
+            br = posD & spTr
+            posSTr = br.bit_length()
+            posD = posD ^ br
+            tx1 = var + str(posSTr)
+            tx2 = writeUlli(posD, "-", var, "") + writeUlli(refDen[1], "+", var, "")
+            remP[tx1] = tx2
+        elif refDen[1] & spTr:
+            br = refDen[1] & spTr
+            posSTr = br.bit_length()
+            refDen[1] = refDen[1] ^ br
+            tx1 = var + str(posSTr)
+            tx2 = writeUlli(refDen[1], "-", var, "") + writeUlli(posD, "+", var, "")
+            remP[tx1] = tx2
+        else:
+            print("error")
+    return remP
+
+def build_latex(matCoefF, matNumSignF, matDenNigF, graphs, symmetries, refSpanningTrees, refDens, ones, n):
+    for i in range(len(graphs)):
+        sym = symmetries[i]
+        spTr = refSpanningTrees[i]
+        edges = graphs[i]
+        loadCode.draw_multidigraph(edges)
+        pot = ""
+        for j in range(n):
+            pot += "\\langle "+str(2*j+1) + "," + str(2*j+2) + " || "  + str(2*edges[2*j+1][1] - 1)+ ","  + str(2*edges[2*j+1][1]) + " \\rangle"
+        if sym < 0:
+            sym = -sym
+            tsym = "-"
+        else:
+            tsym = ""
+        tsym ="V_{"+str(n)+"}^{"+str(i+1)+"} = "+tsym+"\\frac{1}{"+str(sym)+"}"+pot
+        #print(tsym)
+
+        fraction_latex = "\\Omega_{"+str(n)+"}^{"+str(i+1)+"} = "
+        matNS = matNumSignF[i]
+        cfi = matCoefF[i]
+        for ij in range(len(matNS)):
+            tex = ""
+            txtN = ""
+            for j in range(len(matNS[ij])):
+                coef = cfi[ij][j]
+                if coef == -1:
+                    txtN+="-"
+                elif coef == 1:
+                    if j == 0:
+                        txtN+=""
+                    else:
+                        txtN+="+"
+                elif coef < -1:
+                    tex+=str(coef)
+                else:  # coef > 1
+                    txtN+="+"+str(coef)
+                # n^- terms
+                txtN+=writeUlli(matNS[ij][j][1], "f_{", "", "}", "",0)
+
+                # n^+ terms
+                txtN+=writeUlli(matNS[ij][j][0] ^ matNS[ij][j][1], "g_{", "", "}", "",0)
+
+            # denominator
+            txtD = ""
+            for j in range(len(matDenNigF[i][ij])):
+                txtD+="("
+                # -E terms
+                txtD+=writeUlli(matDenNigF[i][ij][j][1], "-", "E_{", "}", "",0)
+                # +E terms
+                txtD+=writeUlli(matDenNigF[i][ij][j][0] ^ matDenNigF[i][ij][j][1], "+", "E_{", "}", "",0)
+                txtD+=")"
+            tex0 = "\\frac{"+txtN +"}{"+ txtD +"}"  # reset for each fraction numerator
+            if ij == 0:
+                tex += tex0
+            else:
+                tex += "+"+tex0
+
+            # join into string
+            fraction_latex += tex
+        display(Latex(tsym))
+        display(Latex(fraction_latex))
+        #display(fraction_latex)
 
     plt.figure(figsize=figsize)
 
